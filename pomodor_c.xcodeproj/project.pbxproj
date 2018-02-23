@@ -23,6 +23,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B40684A2040899A00886BD6 /* argh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argh.h; sourceTree = "<group>"; };
+		2B40685520409E0600886BD6 /* ttytimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttytimer.h; sourceTree = "<group>"; };
 		2BB3C4C82037B77900858802 /* pomodor_c */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pomodor_c; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BB3C4CB2037B77900858802 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,6 +59,8 @@
 		2BB3C4CA2037B77900858802 /* pomodor_c */ = {
 			isa = PBXGroup;
 			children = (
+				2B40685520409E0600886BD6 /* ttytimer.h */,
+				2B40684A2040899A00886BD6 /* argh.h */,
 				2BB3C4CB2037B77900858802 /* main.cpp */,
 			);
 			path = pomodor_c;
@@ -234,6 +238,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XNM36GWK3G;
+				OTHER_LDFLAGS = "-lncurses";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -243,6 +248,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XNM36GWK3G;
+				OTHER_LDFLAGS = "-lncurses";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
