@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2BB3C4CC2037B77900858802 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* main.cpp */; };
+		2B6C27D520459FC400ABDD84 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* main.cpp */; };
+		2BF9A01020469BBE00D7DEA2 /* NotificationCenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,10 +24,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2B40684A2040899A00886BD6 /* argh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argh.h; sourceTree = "<group>"; };
 		2B40685520409E0600886BD6 /* ttytimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttytimer.h; sourceTree = "<group>"; };
+		2B6C27B8204557CA00ABDD84 /* ao_tty_timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ao_tty_timer.hpp; sourceTree = "<group>"; };
+		2BA55F5C2045DFF100932493 /* argh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argh.h; sourceTree = "<group>"; };
 		2BB3C4C82037B77900858802 /* pomodor_c */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pomodor_c; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BB3C4CB2037B77900858802 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotificationCenter.cpp; sourceTree = "<group>"; };
+		2BF9A00D204696E300D7DEA2 /* NotificationCenter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NotificationCenter.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +64,11 @@
 			isa = PBXGroup;
 			children = (
 				2B40685520409E0600886BD6 /* ttytimer.h */,
-				2B40684A2040899A00886BD6 /* argh.h */,
+				2BA55F5C2045DFF100932493 /* argh.h */,
+				2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */,
+				2BF9A00D204696E300D7DEA2 /* NotificationCenter.hpp */,
 				2BB3C4CB2037B77900858802 /* main.cpp */,
+				2B6C27B8204557CA00ABDD84 /* ao_tty_timer.hpp */,
 			);
 			path = pomodor_c;
 			sourceTree = "<group>";
@@ -123,7 +130,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BB3C4CC2037B77900858802 /* main.cpp in Sources */,
+				2BF9A01020469BBE00D7DEA2 /* NotificationCenter.cpp in Sources */,
+				2B6C27D520459FC400ABDD84 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

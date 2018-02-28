@@ -57,6 +57,7 @@ typedef struct
 {
         /* while() boolean */
         bool running;
+        bool interupted;
 
         /* terminal variables */ 
         SCREEN *ttyscr;
@@ -174,6 +175,7 @@ void init(void) {
     
     /* Init global struct */
     ttyclock->running = true;
+    ttyclock->interupted = false;
     if(!ttyclock->geo.x) ttyclock->geo.x = 0;
     if(!ttyclock->geo.y) ttyclock->geo.y = 0;
     if(!ttyclock->geo.a) ttyclock->geo.a = 1;
@@ -419,6 +421,7 @@ void key_event(void) {
         case 'q':
         case 'Q':
             ttyclock->running = false;
+            ttyclock->interupted = true;
             break;
             
         case 'r':
@@ -455,47 +458,6 @@ void key_event(void) {
  * parsed.
  * time format: hh:mm:ss, where all but the colons are optional.
  */
-static void parse_time_arg(char *time) {
-    int digits[N_TIME_DIGITS];
-    for (int i = 0; i < N_TIME_DIGITS; ++i) digits[i] = -1;
-    
-    int i = 0, remaining = 2;
-    while (*time != '\0') {
-        if (isdigit(*time)) {
-            if (remaining == 0) {
-                puts("Too many digits in time argument");
-                exit(EXIT_FAILURE);
-            }
-            
-            digits[i] = *time - '0';
-            ++i;
-            --remaining;
-        } else if (*time == ':') {
-            i += remaining;
-            remaining = 2;
-        } else {
-            puts("Invalid character in time argument");
-            exit(EXIT_FAILURE);
-        }
-        
-        ++time;
-    }
-    
-    fill_ttyclock_time(digits, ttyclock->date.hour);
-    fill_ttyclock_time(digits + 2, ttyclock->date.minute);
-    fill_ttyclock_time(digits + 4, ttyclock->date.second);
-    memcpy(ttyclock->initial_digits, digits, N_TIME_DIGITS * sizeof(int));
-    
-    ttyclock->date.timestr[0] = ttyclock->date.hour[0] + '0';
-    ttyclock->date.timestr[1] = ttyclock->date.hour[1] + '0';
-    ttyclock->date.timestr[2] = ':';
-    ttyclock->date.timestr[3] = ttyclock->date.minute[0] + '0';
-    ttyclock->date.timestr[4] = ttyclock->date.minute[1] + '0';
-    ttyclock->date.timestr[5] = ':';
-    ttyclock->date.timestr[6] = ttyclock->date.second[0] + '0';
-    ttyclock->date.timestr[7] = ttyclock->date.second[1] + '0';
-    ttyclock->date.timestr[8] = '\0';
-}
 
 /* Converts the name of a colour to its ncurses number. Case insensitive. */
 int color_name_to_number(const char *color) {
@@ -511,37 +473,6 @@ int color_name_to_number(const char *color) {
     else return -1;
 }
 
-// starts timer instance with time in hh:mm:ss format
-void start(char* time) {
-    /* Alloc ttyclock */
-    printf("%s", time);
-    
-    ttyclock = static_cast<ttyclock_t*>(malloc(sizeof(ttyclock_t)));
-    assert(ttyclock != NULL);
-    memset(ttyclock, 0, sizeof(ttyclock_t));
-    
-    /* Default color */
-    ttyclock->option.color = COLOR_GREEN; /* COLOR_GREEN = 2 */
-    
-    atexit(cleanup);
-    
-    parse_time_arg(time);
-    /* Ensure input is anything but 0. */
-    if (time_is_zero()) {
-        puts("Time argument is zero");
-        exit(EXIT_FAILURE);
-    }
-    
-    init();
-    attron(A_BLINK);
-    while (ttyclock->running) {
-        draw_clock();
-        key_event();
-        if (!time_is_zero()) update_hour();
-        else {ttyclock->running = false;}
-    }
-    
-    endwin();
-}
+
 
 #endif /* TTYCLOCK_H_INCLUDED */

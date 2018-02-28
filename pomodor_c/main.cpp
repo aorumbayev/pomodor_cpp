@@ -9,37 +9,16 @@
 #include <iostream>
 #include <string>
 #include "argh.h"
-#include "ttytimer.h"
-#include <thread>
-#include <chrono>
+#include "ao_tty_timer.hpp"
+#include "NotificationCenter.hpp"
 
 using namespace std;
 
-#define WORLD_WIDTH 50
-#define WORLD_HEIGHT 20
+PomodoroTimer *timer;
 
-string convert(string s, int numRows);
-
-class token {
-public:
-    virtual bool is_settings() {
-        return false;
-    }
-    
-    virtual bool is_add_task() {
-        return false;
-    }
-};
-
-//class PomodoroTimer {
-//private:
-//    float
-//
-//public:
-//    PomodoroTimer() {
-//
-//    }
-//}
+void handleNotification() {
+    timer->restart(2);
+}
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -50,25 +29,11 @@ int main(int argc, const char * argv[]) {
     cmdl("-short", 1) >> sh;
     cmdl("-long", 1) >> lo;
     cmdl("-time", 1) >> ti;
+    timer = new PomodoroTimer(sh, lo, ti);
     
-    cout << sh << endl << lo << endl << ti << endl;
+    NotificationCenter::defaultNotificationCenter()->addObserver(handleNotification, "My Observer");
     
-    char *t = "0:0:09";
+    timer->start();
     
-    char *t1 = "0:0:02";
-    cout << "starting first" << endl;
-    start(t);
-    
-    int cnt = 0;
-    while(cnt <= 10000000) {
-        cout << "starting second" << endl;
-        if (cnt == 10000000) {
-        start(t1);
-        }
-        cnt++;
-    }
-
     return 0;
 }
-
-
