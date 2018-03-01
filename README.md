@@ -8,6 +8,11 @@ Execute the following command in terminal from pomodor_cpp directory:
 
 `g++ -std=c++11 -lncurses -o timer ao_tty_timer_controller.cpp`
 
+#### Ubuntu
+If you are using Ubuntu, execute the following command before compiling pomodoro.
+
+`sudo apt-get install libncurses-dev`
+
 ### USAGE
 ```
 ./timer [-short MINUTES] [-long MINUTES] [-time MINUTES]
