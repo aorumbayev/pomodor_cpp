@@ -92,10 +92,11 @@ typedef struct
         /* time.h utils */
         struct tm *tm;
         time_t lt;
+        
 
         /* Clock member */
         WINDOW *framewin;
-        WINDOW *datewin;
+        WINDOW *quotewin;
 
 } ttyclock_t;
 
@@ -195,20 +196,20 @@ void init(void) {
     if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK);
     
     /* Create the date win */
-    ttyclock->datewin = newwin(DATEWINH, strlen(ttyclock->date.timestr) + 2,
+    ttyclock->quotewin = newwin(DATEWINH, 16 + 2,
                                ttyclock->geo.x + ttyclock->geo.h - 1,
                                ttyclock->geo.y + (ttyclock->geo.w / 2) -
-                               (strlen(ttyclock->date.timestr) / 2) - 1);
+                               (16 / 2) - 1);
     
-    if (ttyclock->option.box) box(ttyclock->datewin, 0, 0);
+    if (ttyclock->option.box) box(ttyclock->quotewin, 0, 0);
     
-    clearok(ttyclock->datewin, true);
+    clearok(ttyclock->quotewin, true);
     
     set_center();
     
     nodelay(stdscr, true);
     
-    wrefresh(ttyclock->datewin);
+    wrefresh(ttyclock->quotewin);
     
     wrefresh(ttyclock->framewin);
 }
@@ -283,48 +284,6 @@ void draw_number(int n, int x, int y, unsigned int color) {
     wrefresh(ttyclock->framewin);
 }
 
-void draw_clock(void) {
-    chtype dotcolor = COLOR_PAIR(1);
-    unsigned int numcolor = 1;
-    
-    /* Change the colours to blink at certain times. */
-    if (time(NULL) % 2 == 0) {
-        dotcolor = COLOR_PAIR(2);
-        if (time_is_zero()) numcolor = 2;
-    }
-    
-    /* Draw hour numbers */
-    draw_number(ttyclock->date.hour[0], 1, 1, numcolor);
-    draw_number(ttyclock->date.hour[1], 1, 8, numcolor);
-    
-    /* 2 dot for number separation */
-    wbkgdset(ttyclock->framewin, dotcolor);
-    mvwaddstr(ttyclock->framewin, 2, 16, "  ");
-    mvwaddstr(ttyclock->framewin, 4, 16, "  ");
-    
-    /* Draw minute numbers */
-    draw_number(ttyclock->date.minute[0], 1, 20, numcolor);
-    draw_number(ttyclock->date.minute[1], 1, 27, numcolor);
-    
-    /* Draw the date */
-    if (ttyclock->option.bold) wattron(ttyclock->datewin, A_BOLD);
-    else wattroff(ttyclock->datewin, A_BOLD);
-    
-    wbkgdset(ttyclock->datewin, (COLOR_PAIR(2)));
-    mvwprintw(ttyclock->datewin, (DATEWINH / 2), 1, ttyclock->date.timestr);
-    wrefresh(ttyclock->datewin);
-    
-    /* Draw second frame. */
-    /* Again 2 dot for number separation */
-    wbkgdset(ttyclock->framewin, dotcolor);
-    mvwaddstr(ttyclock->framewin, 2, NORMFRAMEW, "  ");
-    mvwaddstr(ttyclock->framewin, 4, NORMFRAMEW, "  ");
-    
-    /* Draw second numbers */
-    draw_number(ttyclock->date.second[0], 1, 39, numcolor);
-    draw_number(ttyclock->date.second[1], 1, 46, numcolor);
-}
-
 void clock_move(int x, int y, int w, int h) {
     /* Erase border for a clean move */
     wbkgdset(ttyclock->framewin, COLOR_PAIR(0));
@@ -332,10 +291,10 @@ void clock_move(int x, int y, int w, int h) {
     werase(ttyclock->framewin);
     wrefresh(ttyclock->framewin);
     
-    wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
-    wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-    werase(ttyclock->datewin);
-    wrefresh(ttyclock->datewin);
+    wbkgdset(ttyclock->quotewin, COLOR_PAIR(0));
+    wborder(ttyclock->quotewin, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    werase(ttyclock->quotewin);
+    wrefresh(ttyclock->quotewin);
     
     /* Frame win move */
     mvwin(ttyclock->framewin, (ttyclock->geo.x = x), (ttyclock->geo.y = y));
@@ -343,19 +302,19 @@ void clock_move(int x, int y, int w, int h) {
             (ttyclock->geo.w = w));
     
     /* Date win move */
-    mvwin(ttyclock->datewin,
+    mvwin(ttyclock->quotewin,
           ttyclock->geo.x + ttyclock->geo.h - 1,
           ttyclock->geo.y + (ttyclock->geo.w / 2)
-          - (strlen(ttyclock->date.timestr) / 2) - 1);
-    wresize(ttyclock->datewin, DATEWINH,
-            strlen(ttyclock->date.timestr) + 2);
+          - (16 / 2) - 1);
+    wresize(ttyclock->quotewin, DATEWINH,
+            16 + 2);
     
-    if (ttyclock->option.box) box(ttyclock->datewin,  0, 0);
+    if (ttyclock->option.box) box(ttyclock->quotewin,  0, 0);
     
     if (ttyclock->option.box) box(ttyclock->framewin, 0, 0);
     
     wrefresh(ttyclock->framewin);
-    wrefresh(ttyclock->datewin);
+    wrefresh(ttyclock->quotewin);
 }
 
 void set_second(void) {
@@ -381,21 +340,21 @@ void set_box(bool b) {
     ttyclock->option.box = b;
     
     wbkgdset(ttyclock->framewin, COLOR_PAIR(0));
-    wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
+    wbkgdset(ttyclock->quotewin, COLOR_PAIR(0));
     
     if(ttyclock->option.box) {
         wbkgdset(ttyclock->framewin, COLOR_PAIR(0));
-        wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
+        wbkgdset(ttyclock->quotewin, COLOR_PAIR(0));
         box(ttyclock->framewin, 0, 0);
-        box(ttyclock->datewin,  0, 0);
+        box(ttyclock->quotewin,  0, 0);
     } else {
         wborder(ttyclock->framewin, ' ', ' ', ' ', ' ', ' ', ' ',
                 ' ', ' ');
-        wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ',
+        wborder(ttyclock->quotewin, ' ', ' ', ' ', ' ', ' ', ' ',
                 ' ', ' ');
     }
     
-    wrefresh(ttyclock->datewin);
+    wrefresh(ttyclock->quotewin);
     wrefresh(ttyclock->framewin);
 }
 
@@ -411,6 +370,48 @@ static void fill_ttyclock_time(int *digits, unsigned int *time) {
     }
 }
 
+static void parse_time_arg(const char *time) {
+    int digits[N_TIME_DIGITS];
+    for (int i = 0; i < N_TIME_DIGITS; ++i) digits[i] = -1;
+    
+    int i = 0, remaining = 2;
+    while (*time != '\0') {
+        
+        if (isdigit(*time)) {
+            if (remaining == 0) {
+                puts("Too many digits in time argument");
+                exit(EXIT_FAILURE);
+            }
+            
+            digits[i] = *time - '0';
+            ++i;
+            --remaining;
+        } else if (*time == ':') {
+            i += remaining;
+            remaining = 2;
+        } else {
+            puts("Invalid character in time argument");
+            exit(EXIT_FAILURE);
+        }
+        
+        ++time;
+    }
+    
+    fill_ttyclock_time(digits, ttyclock->date.hour);
+    fill_ttyclock_time(digits + 2, ttyclock->date.minute);
+    fill_ttyclock_time(digits + 4, ttyclock->date.second);
+    memcpy(ttyclock->initial_digits, digits, N_TIME_DIGITS * sizeof(int));
+    
+    ttyclock->date.timestr[0] = ttyclock->date.hour[0] + '0';
+    ttyclock->date.timestr[1] = ttyclock->date.hour[1] + '0';
+    ttyclock->date.timestr[2] = ':';
+    ttyclock->date.timestr[3] = ttyclock->date.minute[0] + '0';
+    ttyclock->date.timestr[4] = ttyclock->date.minute[1] + '0';
+    ttyclock->date.timestr[5] = ':';
+    ttyclock->date.timestr[6] = ttyclock->date.second[0] + '0';
+    ttyclock->date.timestr[7] = ttyclock->date.second[1] + '0';
+    ttyclock->date.timestr[8] = '\0';
+}
 
 void key_event(void) {
     int i, c;

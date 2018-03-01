@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B6C27D520459FC400ABDD84 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* main.cpp */; };
-		2BF9A01020469BBE00D7DEA2 /* NotificationCenter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */; };
+		2B6C27D520459FC400ABDD84 /* ao_tty_timer_controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,12 +24,10 @@
 
 /* Begin PBXFileReference section */
 		2B40685520409E0600886BD6 /* ttytimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttytimer.h; sourceTree = "<group>"; };
-		2B6C27B8204557CA00ABDD84 /* ao_tty_timer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ao_tty_timer.hpp; sourceTree = "<group>"; };
+		2B6C27B8204557CA00ABDD84 /* ao_tty_timer_model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ao_tty_timer_model.hpp; sourceTree = "<group>"; };
 		2BA55F5C2045DFF100932493 /* argh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argh.h; sourceTree = "<group>"; };
-		2BB3C4C82037B77900858802 /* pomodor_c */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pomodor_c; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BB3C4CB2037B77900858802 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NotificationCenter.cpp; sourceTree = "<group>"; };
-		2BF9A00D204696E300D7DEA2 /* NotificationCenter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NotificationCenter.hpp; sourceTree = "<group>"; };
+		2BB3C4C82037B77900858802 /* pomodor_cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pomodor_cpp; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ao_tty_timer_controller.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +44,7 @@
 		2BB3C4BF2037B77900858802 = {
 			isa = PBXGroup;
 			children = (
-				2BB3C4CA2037B77900858802 /* pomodor_c */,
+				2BB3C4CA2037B77900858802 /* pomodor_cpp */,
 				2BB3C4C92037B77900858802 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,30 +52,28 @@
 		2BB3C4C92037B77900858802 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2BB3C4C82037B77900858802 /* pomodor_c */,
+				2BB3C4C82037B77900858802 /* pomodor_cpp */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2BB3C4CA2037B77900858802 /* pomodor_c */ = {
+		2BB3C4CA2037B77900858802 /* pomodor_cpp */ = {
 			isa = PBXGroup;
 			children = (
 				2B40685520409E0600886BD6 /* ttytimer.h */,
 				2BA55F5C2045DFF100932493 /* argh.h */,
-				2BF9A00C204696E200D7DEA2 /* NotificationCenter.cpp */,
-				2BF9A00D204696E300D7DEA2 /* NotificationCenter.hpp */,
-				2BB3C4CB2037B77900858802 /* main.cpp */,
-				2B6C27B8204557CA00ABDD84 /* ao_tty_timer.hpp */,
+				2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */,
+				2B6C27B8204557CA00ABDD84 /* ao_tty_timer_model.hpp */,
 			);
-			path = pomodor_c;
+			path = pomodor_cpp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2BB3C4C72037B77900858802 /* pomodor_c */ = {
+		2BB3C4C72037B77900858802 /* pomodor_cpp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2BB3C4CF2037B77900858802 /* Build configuration list for PBXNativeTarget "pomodor_c" */;
+			buildConfigurationList = 2BB3C4CF2037B77900858802 /* Build configuration list for PBXNativeTarget "pomodor_cpp" */;
 			buildPhases = (
 				2BB3C4C42037B77900858802 /* Sources */,
 				2BB3C4C52037B77900858802 /* Frameworks */,
@@ -88,9 +83,9 @@
 			);
 			dependencies = (
 			);
-			name = pomodor_c;
+			name = pomodor_cpp;
 			productName = pomodor_c;
-			productReference = 2BB3C4C82037B77900858802 /* pomodor_c */;
+			productReference = 2BB3C4C82037B77900858802 /* pomodor_cpp */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +103,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2BB3C4C32037B77900858802 /* Build configuration list for PBXProject "pomodor_c" */;
+			buildConfigurationList = 2BB3C4C32037B77900858802 /* Build configuration list for PBXProject "pomodor_cpp" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -120,7 +115,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2BB3C4C72037B77900858802 /* pomodor_c */,
+				2BB3C4C72037B77900858802 /* pomodor_cpp */,
 			);
 		};
 /* End PBXProject section */
@@ -130,8 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BF9A01020469BBE00D7DEA2 /* NotificationCenter.cpp in Sources */,
-				2B6C27D520459FC400ABDD84 /* main.cpp in Sources */,
+				2B6C27D520459FC400ABDD84 /* ao_tty_timer_controller.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,7 +258,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2BB3C4C32037B77900858802 /* Build configuration list for PBXProject "pomodor_c" */ = {
+		2BB3C4C32037B77900858802 /* Build configuration list for PBXProject "pomodor_cpp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2BB3C4CD2037B77900858802 /* Debug */,
@@ -273,7 +267,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2BB3C4CF2037B77900858802 /* Build configuration list for PBXNativeTarget "pomodor_c" */ = {
+		2BB3C4CF2037B77900858802 /* Build configuration list for PBXNativeTarget "pomodor_cpp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2BB3C4D02037B77900858802 /* Debug */,
