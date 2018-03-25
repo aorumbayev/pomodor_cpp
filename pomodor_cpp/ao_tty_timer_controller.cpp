@@ -18,6 +18,7 @@ using namespace std;
 PomodoroTimer *timer;
 
 //MARK: - Main function
+bool IsTerminalAvailable = false;
 
 int main(int argc, const char * argv[]) {
     
@@ -32,9 +33,40 @@ int main(int argc, const char * argv[]) {
     cmdl("-long", 30) >> lo;
     cmdl("-time", 25) >> ti;
     
+    for (int argi = 1; argi < argc; argi++)
+    {
+        if (strcmp(argv[argi], "--debug-in-terminal") == 0)
+        {
+            printf("Debugging in terminal enabled\n");
+            getchar(); // Without this call debugging will be skipped
+            break;
+        }
+    }
+    
+    char *term = getenv("TERM");
+    
+    IsTerminalAvailable = (term != NULL);
+    
+    if (IsTerminalAvailable)
+        IsTerminalAvailable = (initscr() != NULL);
+    
+    // ======================
+    
     // Initializing and starting timer
-    timer = new PomodoroTimer(sh, lo, ti);
+    timer = new PomodoroTimer(sh, lo, ti, 1);
     timer->start();
     
+    // ======================
+    
+    if (IsTerminalAvailable)
+    {
+        printw("Press any key to exit...");
+        refresh();
+        
+        getch();
+        
+        endwin();
+    }
+
     return 0;
 }
