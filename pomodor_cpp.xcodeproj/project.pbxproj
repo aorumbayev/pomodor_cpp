@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B6C27D520459FC400ABDD84 /* ao_tty_timer_controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */; };
+		2B6905642066E4FF008D8104 /* ao_tty_timer_controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		2B40685520409E0600886BD6 /* ttytimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttytimer.h; sourceTree = "<group>"; };
+		2B6905622066A4A7008D8104 /* scratch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scratch.cpp; sourceTree = "<group>"; };
 		2B6C27B8204557CA00ABDD84 /* ao_tty_timer_model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ao_tty_timer_model.hpp; sourceTree = "<group>"; };
 		2BA55F5C2045DFF100932493 /* argh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = argh.h; sourceTree = "<group>"; };
 		2BB3C4C82037B77900858802 /* pomodor_cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pomodor_cpp; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,6 +65,7 @@
 				2BA55F5C2045DFF100932493 /* argh.h */,
 				2BB3C4CB2037B77900858802 /* ao_tty_timer_controller.cpp */,
 				2B6C27B8204557CA00ABDD84 /* ao_tty_timer_model.hpp */,
+				2B6905622066A4A7008D8104 /* scratch.cpp */,
 			);
 			path = pomodor_cpp;
 			sourceTree = "<group>";
@@ -125,7 +127,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B6C27D520459FC400ABDD84 /* ao_tty_timer_controller.cpp in Sources */,
+				2B6905642066E4FF008D8104 /* ao_tty_timer_controller.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
