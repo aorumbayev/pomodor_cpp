@@ -136,8 +136,13 @@ void set_center(void);
 void set_box(bool b);
 void key_event(void);
 
+// MARK : Extended methods
+
+// Stores multiple WINDOW instances for specific timer_ids
 std::map<int, WINDOW*> timers_map;
-std::vector<WINDOW*> quotes_vector;
+// Stores multiple WINDOW instances representing quotes for specific timer_ids
+std::vector<WINDOW*> quote_windows;
+// Stores multiple boolean values indicating whether timer is running or not
 std::vector<bool> timers_execution_vector;
 
 struct date
@@ -223,7 +228,7 @@ void init() {
         
         clearok(quotewin, true);
         
-        quotes_vector.push_back(quotewin);
+        quote_windows.push_back(quotewin);
         
         if (ttyclock->option.bold) wattron(cur_window, A_BLINK);
         
@@ -233,34 +238,13 @@ void init() {
         dates_of_timers.push_back(new date());
     }
     
-    /* Create clock win */
-    //    if (ttyclock->option.box) box(ttyclock->framewin, 0, 0);
-    //
-    //    if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK);
-    
-    //    /* Create the date win */
-    //    ttyclock->quotewin = newwin(DATEWINH, 16 + 2,
-    //                                ttyclock->geo.x + ttyclock->geo.h - 1,
-    //                                ttyclock->geo.y + (ttyclock->geo.w / 2) -
-    //                                (16 / 2) - 1);
-    //
-    //    if (ttyclock->option.box) box(ttyclock->quotewin, 0, 0);
-    //
-    //    clearok(ttyclock->quotewin, true);
-    
-    /* Create clock win */
-    //    ttyclock->newframewin = newwin(ttyclock->geo.h, ttyclock->geo.w, ttyclock->geo.x + ttyclock->geo.h - 1, ttyclock->geo.y + 50);
-    //
-    //    if (ttyclock->option.box) box(ttyclock->newframewin, 0, 0);
-    //
-    //    if (ttyclock->option.bold) wattron(ttyclock->newframewin, A_BLINK);
     set_center();
     nodelay(stdscr, true);
     
     for (auto const& x : timers_map)
     {
         wrefresh(x.second);
-        wrefresh(quotes_vector[x.first]);
+        wrefresh(quote_windows[x.first]);
     }
 }
 
@@ -334,7 +318,7 @@ void draw_number(int n, int x, int y, unsigned int color, int timer_id) {
         mvwaddch(cur_window, x, sy, ' ');
         
         wrefresh(cur_window);
-        wrefresh(quotes_vector[timer_id]);
+        wrefresh(quote_windows[timer_id]);
     }
 }
 
@@ -348,7 +332,7 @@ void clock_move(int x, int y, int w, int h) {
     
     for (auto const& val : timers_map) {
         WINDOW *cur_window = val.second;
-        WINDOW *quote_window = quotes_vector[val.first];
+        WINDOW *quote_window = quote_windows[val.first];
         
         /* Erase border for a clean move */
         wbkgdset(cur_window, COLOR_PAIR(0));
@@ -473,44 +457,6 @@ static void parse_time_arg(const char *time, int timer_id) {
     cur_date->timestr[8] = '\0';
 }
 
-//void key_event(void) {
-//    int i, c;
-//    
-//    // s delay and ns delay.
-//    struct timespec length = { 1, 0 };
-//    
-////    switch(c = wgetch(stdscr)) {
-////        case 'q':
-////        case 'Q':
-////            ttyclock->running = false;
-////            ttyclock->interupted = true;
-////            break;
-////
-////        case 'r':
-////        case 'R':
-////            fill_ttyclock_time(ttyclock->initial_digits,
-////                               cur_date->hour);
-////            fill_ttyclock_time(ttyclock->initial_digits + 2,
-////                               cur_date->minute);
-////            fill_ttyclock_time(ttyclock->initial_digits + 4,
-////                               cur_date->second);
-////            break;
-////
-////        default:
-////            nanosleep(&length, NULL);
-////
-////            for (i = 0; i < 8; ++i) {
-////                if (c == (i + '0')) {
-////                    ttyclock->option.color = i;
-////                    init_pair(1, ttyclock->bg, i);
-////                    init_pair(2, i, ttyclock->bg);
-////                }
-////            }
-////
-////            break;
-////    }
-//}
-
 /* Parses time into cur_date->hour/minute/second. Exits with
  * an error message on bad time format. Sets timestr to what was
  * parsed.
@@ -530,7 +476,5 @@ int color_name_to_number(const char *color) {
     else if (strcasecmp(color, "white") == 0) return COLOR_WHITE;
     else return -1;
 }
-
-
 
 #endif /* TTYCLOCK_H_INCLUDED */

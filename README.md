@@ -13,17 +13,16 @@ If you are using Ubuntu, execute the following command before compiling pomodoro
 
 `sudo apt-get install libncurses-dev`
 
-### USAGE
+### Example Usage
 ```
-./timer [-short MINUTES] [-long MINUTES] [-time MINUTES]
+./timer --num_timers $0 --user 3,10,15 --user 5,50,30
+```
+##### Arguments description:
+`--num_timers` - required argument for specifying number of timer instances to execute.
+`--user` - optional argument to set specific short break, long break and time options for user. Input for time values are separated by `,` and entered in following format `$0,$1,$2`.
 
-arguments description:
--short - time in minutes for short brake (default 5 minutes)
--long - time in minutes for short brake (default 30 minutes)
--time - time in minutes for short brake (default 25 minutes)
-```
+### Extra features
+If you want to pause certain timer just type the corresponding number on your keyboard. For instance, if you want to stop second timer for second user just press `2` button on your keyboard. Pressing it again will resume the timer.
 
 ## Credits
 • [tty-timer](https://github.com/mbarbar/ttytimer) - A modification of tty-clock that implements timer instead of clock.
-
-• [Argh!](https://github.com/adishavit/argh) - A minimalist, frustration-free, header-only argument handler.

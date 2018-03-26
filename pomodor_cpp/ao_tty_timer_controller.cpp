@@ -7,66 +7,95 @@
 //
 
 #include "ao_tty_timer_model.hpp"
-
-// Third-Party frameworks
-#include "argh.h"
+#include <iostream>
+#include <getopt.h>
 
 using namespace std;
 
 //MARK: - Local Timer Instance Declaration
 
-PomodoroTimer *timer;
+void PrintHelp()
+{
+    std::cout <<
+    "--num_timers <n>:    Set number of timers to be executed\n"
+    "--user:              Specify short break, long break and timer time in following format {$0:$1:$2}\n"
+    "--help:              Show help\n";
+    exit(1);
+}
 
 //MARK: - Main function
 bool IsTerminalAvailable = false;
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char ** argv) {
     
-    // Declaring and initializing time intervals
-    float sh = 0.0f, lo = 0.0f, ti = 0.0f;
+    // Number of timers
+    int number_of_timers = 0;
     
-    // Declaring and initializing argument parser
-    auto cmdl = argh::parser(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
+    // Setup for `getopt_long` usage
+    const char* const short_opts = "n:u";
+    const option long_opts[] = {
+        {"num_timers", 1, nullptr, 'n'},
+        {"user", 1, nullptr, 'u'},
+        {"help", 0, nullptr, 'h'},
+        {nullptr, 0, nullptr, 0}
+    };
     
-    // Reading parameters and parsing arguments (with default values)
-    cmdl("-short", 1) >> sh;
-    cmdl("-long", 1) >> lo;
-    cmdl("-time", 5) >> ti;
+    // Vector of users, each user is a simple struct holding individual time options.
+    vector<User> users;
     
-    for (int argi = 1; argi < argc; argi++)
+    while (true)
     {
-        if (strcmp(argv[argi], "--debug-in-terminal") == 0)
-        {
-            printf("Debugging in terminal enabled\n");
-            getchar(); // Without this call debugging will be skipped
+        const auto opt = getopt_long(argc, argv, short_opts, long_opts, nullptr);
+        
+        if (-1 == opt)
             break;
+        
+        switch (opt)
+        {
+            case 'n':
+                number_of_timers = stoi(optarg);
+                if (number_of_timers > 5) {
+                    cout << "This CLI is not optimized for adding more than 5 timers simultaneosly" << endl;
+                    return 1;
+                }
+                break;
+                
+            case 'u': {
+                
+                if (users.size() > number_of_timers) {
+                    cout << "Number of users is exceeding number of timers!" << endl;
+                    return 1;
+                }
+                
+                users.push_back(User(optarg));
+                break;
+            }
+                
+            case 'h': // -h or --help
+            case '?': // Unrecognized option
+            default:
+                PrintHelp();
+                break;
         }
     }
     
-    char *term = getenv("TERM");
+    if (number_of_timers == 0) {
+        cout << "Please, specify number of timers to be executed!" << endl;
+        return 1;
+    }
     
-    IsTerminalAvailable = (term != NULL);
-    
-    if (IsTerminalAvailable)
-        IsTerminalAvailable = (initscr() != NULL);
-    
-    // ======================
-    
-    // Initializing and starting timer
-    timer = new PomodoroTimer(sh, lo, ti, 2);
-    timer->start();
-    
-    // ======================
-    
-    if (IsTerminalAvailable)
-    {
-        printw("Press any key to exit...");
-        refresh();
-        
-        getch();
-        
-        endwin();
+    if (users.size() != number_of_timers) {
+        for (size_t i = users.size() ; i < number_of_timers; i++) {
+            users.push_back(User());
+        }
     }
 
+    for (auto t : users) {
+        cout << t.sh << " : " << t.lo << " : " << t.ti << " : " << endl;
+    }
+    
+    PomodoroTimer timer = PomodoroTimer(number_of_timers, users);
+    timer.start();
+    
     return 0;
 }
