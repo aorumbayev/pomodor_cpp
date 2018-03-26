@@ -53,7 +53,7 @@ int main(int argc, const char * argv[]) {
     // ======================
     
     // Initializing and starting timer
-    timer = new PomodoroTimer(sh, lo, ti, 1);
+    timer = new PomodoroTimer(sh, lo, ti, 2);
     timer->start();
     
     // ======================
