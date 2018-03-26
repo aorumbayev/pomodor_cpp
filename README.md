@@ -1,7 +1,9 @@
 ![Logo](https://raw.githubusercontent.com/AOrumbaev/pomodor_cpp/master/pomo_icon.png)
 
 # pomodor_cpp
-A Simple CLI pomodoro timer implemented in C++ using `ncurses`
+A Simple CLI pomodoro timer implemented in C++ using `ncurses`.
+Contains support for up to 5 parrallel timers execution. 
+For best experience and due to fixed size of digits it is required to run the CLI in fullscreen terminal!
 
 ### HOW-TO
 Execute the following command in terminal from pomodor_cpp directory:
