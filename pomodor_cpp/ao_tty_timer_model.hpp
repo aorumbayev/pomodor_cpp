@@ -54,14 +54,14 @@ private:
     float sbreak_time, lbreak_time, task_time;
     
     // Counter used to identify when to shoot long break
-    int sbreak_counter, num_of_timers;
+    int num_of_timers;
     
     // Enum that defines different types of time options.
     enum TimeOptions {ShortBreak, LongBreak, WorkTime};
     
-    // Instance of enum used for identifying in which
-    // mode the timer is currently running.
-    TimeOptions time_options;
+    // Map storing quotes and current execution mode per timer
+    std::map<int, TimeOptions> timer_state;
+    std::vector<int> timer_break_conters;
     
     // Vectors storing simple quotes for work and break modes
     std::vector<std::string> work_quotes {
@@ -80,20 +80,34 @@ private:
         "Look in the mirror and relax."
     };
     
+    void init_timer_states() {
+        timer_state.clear();
+        timer_break_conters.clear();
+        for (int i = 0; i < num_of_timers; i++) {
+            timer_state.emplace(i, TimeOptions::ShortBreak);
+            timer_break_conters.push_back(0);
+        }
+    }
+    
     // This method updates the random quotes vector depending on current timer mode
-    void update_random_quotes() {
+    void init_random_quotes() {
         quotes_vector.clear();
         for (int i = 0; i < num_of_timers; i++) {
-            std::string quote = time_options == TimeOptions::WorkTime ?
-            work_quotes[rand() % work_quotes.size()] :
-            break_quotes[rand() % break_quotes.size()];
+            std::string quote = work_quotes[rand() % work_quotes.size()];
             quote_strings.push_back(quote);
         }
     }
     
+    void update_random_quotes(int timer_id) {
+        std::string quote = timer_state[timer_id] == TimeOptions::WorkTime ?
+        work_quotes[rand() % work_quotes.size()] :
+        break_quotes[rand() % break_quotes.size()];
+        quote_strings[timer_id] = quote;
+    }
+    
     // This method gets the current float value of current timer mode
-    float get_current_timer() {
-        switch (time_options) {
+    float get_current_timer(int timer_id) {
+        switch (timer_state[timer_id]) {
             case ShortBreak:
                 return sbreak_time;
                 
@@ -110,11 +124,12 @@ private:
     }
     
     // This method gets the random quote depending on current timer mode
-    void update_time_option() {
+    void update_time_option(int timer_id) {
+        TimeOptions time_options = timer_state[timer_id];
         switch (time_options) {
             case ShortBreak:
                 time_options = TimeOptions::WorkTime;
-                sbreak_counter++;
+                timer_break_conters[timer_id] = timer_break_conters[timer_id]++;
                 break;
                 
             case LongBreak:
@@ -122,14 +137,15 @@ private:
                 break;
                 
             case WorkTime:
-                if (sbreak_counter == 3) {
+                if (timer_break_conters[timer_id] == 3) {
                     time_options = TimeOptions::LongBreak;
-                    sbreak_counter = 0;
+                    timer_break_conters[timer_id] = 0;
                 } else {
                     time_options = TimeOptions::ShortBreak;
                 }
                 break;
         }
+        timer_state[timer_id] = time_options;
     }
     
 public:
@@ -145,10 +161,10 @@ public:
         // ====================================
         // =======Legacy Code================
         
-        const char *time = formatted_time(task_time).c_str();
-        time_options = TimeOptions::WorkTime;
+        init_random_quotes();
+        init_timer_states();
         
-        update_random_quotes();
+        const char *time = formatted_time(task_time).c_str();
         
         /* Alloc ttyclock */
         printf("%s", time);
@@ -165,10 +181,11 @@ public:
         
         atexit(cleanup);
         
-        parse_time_arg(time);
-        
         /* Ensure input is anything but 0. */
         for (auto const& x : timers_map) {
+            update_random_quotes(x.first);
+            parse_time_arg(time, x.first);
+            
             if (time_is_zero(x.first)) {
                 puts("Time argument is zero");
                 exit(EXIT_FAILURE);
@@ -182,15 +199,13 @@ public:
             key_event();
             for (auto const& x : timers_map)
             {
-                bool status = timers_execution_vector[x.first];
                 if (!time_is_zero(x.first)) update_hour(x.first);
+                else {
+                    update_time_option(x.first);
+                    update_random_quotes(x.first);
+                    restart(x.first);
+                }
             }
-            // ====================================
-            // =======Modified Part================
-            update_time_option();
-            update_random_quotes();
-            restart();
-            // ====================================
         }
         
         endwin();
@@ -198,9 +213,9 @@ public:
     }
     
     // Resets the clock and activate next timer mode
-    void restart() {
-        const char *time = formatted_time(get_current_timer()).c_str();
-        parse_time_arg(time);
+    void restart(int timer_id) {
+        const char *time = formatted_time(get_current_timer(timer_id)).c_str();
+        parse_time_arg(time, timer_id);
     }
     
     // Modified code from ttytimer.h that sets the custom quotes
@@ -212,43 +227,40 @@ public:
         for (auto const& x : timers_map)
         {
             WINDOW *window = x.second;
-            bool window_execution_status = timers_execution_vector[x.first];
             WINDOW *quote_window = quotes_vector[x.first];
             date *cur_date = dates_of_timers[x.first];
             
-            /* Change the colours to blink at certain times. */
             if (time(NULL) % 2 == 0) {
                 dotcolor = COLOR_PAIR(2);
                 if (time_is_zero(x.first)) numcolor = 2;
             }
             
-            if (window_execution_status) {
-                /* Draw hour numbers */
-                draw_number(cur_date->hour[0], 1, 1, numcolor);
-                draw_number(cur_date->hour[1], 1, 8, numcolor);
-                
-                /* 2 dot for number separation */
-                //            wbkgdset(window, dotcolor);
-                mvwaddstr(window, 2, 16, "  ");
-                mvwaddstr(window, 4, 16, "  ");
-                
-                /* Draw minute numbers */
-                draw_number(cur_date->minute[0], 1, 20, numcolor);
-                draw_number(cur_date->minute[1], 1, 27, numcolor);
-                /* Draw the date */
-                if (ttyclock->option.bold) wattron(window, A_BOLD);
-                else wattroff(window, A_BOLD);
-                
-                /* Draw second frame. */
-                /* Again 2 dot for number separation */
-                wbkgdset(window, dotcolor);
-                mvwaddstr(window, 2, NORMFRAMEW, "  ");
-                mvwaddstr(window, 4, NORMFRAMEW, "  ");
-                
-                /* Draw second numbers */
-                draw_number(cur_date->second[0], 1, 39, numcolor);
-                draw_number(cur_date->second[1], 1, 46, numcolor);
-            }
+            /* Draw hour numbers */
+            draw_number(cur_date->hour[0], 1, 1, numcolor, x.first);
+            draw_number(cur_date->hour[1], 1, 8, numcolor, x.first);
+            
+            /* 2 dot for number separation */
+            wbkgdset(window, dotcolor);
+            mvwaddstr(window, 2, 16, "  ");
+            mvwaddstr(window, 4, 16, "  ");
+            
+            /* Draw minute numbers */
+            draw_number(cur_date->minute[0], 1, 20, numcolor, x.first);
+            draw_number(cur_date->minute[1], 1, 27, numcolor, x.first);
+            /* Draw the date */
+            if (ttyclock->option.bold) wattron(window, A_BOLD);
+            else wattroff(window, A_BOLD);
+            
+            /* Draw second frame. */
+            /* Again 2 dot for number separation */
+            wbkgdset(window, dotcolor);
+            mvwaddstr(window, 2, NORMFRAMEW, "  ");
+            mvwaddstr(window, 4, NORMFRAMEW, "  ");
+            
+            /* Draw second numbers */
+            draw_number(cur_date->second[0], 1, 39, numcolor, x.first);
+            draw_number(cur_date->second[1], 1, 46, numcolor, x.first);
+            
             
             wbkgdset(quote_window, (COLOR_PAIR(2)));
             mvwprintw(quote_window, (DATEWINH / 2), 1, "                        ");
@@ -264,10 +276,7 @@ public:
     void key_event(void) {
         int i, c;
         
-        // s delay and ns delay.
         struct timespec length = { 1, 0 };
-        //        char ch = getch(); endwin(); printf("KEY NAME : %s - %d\n", keyname(ch),ch);
-        
         
         switch(c = wgetch(stdscr)) {
             case 'q':
@@ -284,6 +293,9 @@ public:
                 for (auto const& x : timers_map)
                 {
                     date *cur_date = dates_of_timers[x.first];
+                    bool status = timers_execution_vector[x.first];
+                    if (!status) break;
+                    
                     fill_ttyclock_time(ttyclock->initial_digits,
                                        cur_date->hour);
                     fill_ttyclock_time(ttyclock->initial_digits + 2,
@@ -298,10 +310,7 @@ public:
                 
                 for (i = 0; i < 8; ++i) {
                     if (c == (i + '0')) {
-                        timers_execution_vector[i - 1] = !timers_execution_vector[i - 11];
-                        //                        ttyclock->option.color = i;
-                        //                        init_pair(1, ttyclock->bg, i);
-                        //                        init_pair(2, i, ttyclock->bg);
+                        timers_execution_vector[i - 1] = !timers_execution_vector[i - 1];
                     }
                 }
                 

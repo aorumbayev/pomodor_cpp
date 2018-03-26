@@ -229,7 +229,7 @@ void init() {
         
         timers_execution_vector.push_back(true);
         
-//        date val;
+        //        date val;
         dates_of_timers.push_back(new date());
     }
     
@@ -292,6 +292,7 @@ void cleanup(void) {
 /* Decrements ttyclock's time by 1 second. */
 void update_hour(int timer_id) {
     date *cur_date = dates_of_timers[timer_id];
+    bool status = timers_execution_vector[timer_id];
     
     unsigned int seconds = cur_date->second[0] * 10
     + cur_date->second[1];
@@ -300,10 +301,11 @@ void update_hour(int timer_id) {
     unsigned int hours = cur_date->hour[0] * 10
     + cur_date->hour[1];
     
-    if (minutes == 0 && seconds == 0) hours = hours == 0 ? 59 : hours - 1;
-    if (seconds == 0) minutes = minutes == 0 ? 59 : minutes - 1;
-    seconds = seconds == 0 ? 59 : seconds - 1;
-    
+    if (status) {
+        if (minutes == 0 && seconds == 0) hours = hours == 0 ? 59 : hours - 1;
+        if (seconds == 0) minutes = minutes == 0 ? 59 : minutes - 1;
+        seconds = seconds == 0 ? 59 : seconds - 1;
+    }
     /* Put it all back into ttyclock. */
     cur_date->hour[0] = hours / 10;
     cur_date->hour[1] = hours % 10;
@@ -315,7 +317,7 @@ void update_hour(int timer_id) {
     cur_date->second[1] = seconds % 10;
 }
 
-void draw_number(int n, int x, int y, unsigned int color) {
+void draw_number(int n, int x, int y, unsigned int color, int timer_id) {
     int i, sy = y;
     
     for(i = 0; i < 30; ++i, ++sy) {
@@ -323,27 +325,16 @@ void draw_number(int n, int x, int y, unsigned int color) {
             sy = y;
             ++x;
         }
+        WINDOW *cur_window = timers_map[timer_id];
+        if (ttyclock->option.bold) wattron(cur_window, A_BLINK);
+        else wattroff(cur_window, A_BLINK);
         
-        for (auto const& val : timers_map)
-        {
-            bool window_execution_status = timers_execution_vector[val.first];
-            
-            if (window_execution_status) {
-                WINDOW *cur_window = val.second;
-                if (ttyclock->option.bold) wattron(cur_window, A_BLINK);
-                else wattroff(cur_window, A_BLINK);
-                
-                wbkgdset(cur_window,
-                         COLOR_PAIR(number[n][i/2] * color));
-                mvwaddch(cur_window, x, sy, ' ');
-            }
-        }
-    }
-    
-    for (auto const& x : timers_map)
-    {
-        wrefresh(x.second);
-        wrefresh(quotes_vector[x.first]);
+        wbkgdset(cur_window,
+                 COLOR_PAIR(number[n][i/2] * color));
+        mvwaddch(cur_window, x, sy, ' ');
+        
+        wrefresh(cur_window);
+        wrefresh(quotes_vector[timer_id]);
     }
 }
 
@@ -410,7 +401,6 @@ void set_box(bool b) {
     ttyclock->option.box = b;
     for (auto const& val : timers_map) {
         WINDOW *cur_window = val.second;
-        
         wbkgdset(cur_window, COLOR_PAIR(0));
         
         if(ttyclock->option.box) {
@@ -422,6 +412,7 @@ void set_box(bool b) {
         }
         
         wrefresh(cur_window);
+        
     }
 }
 
@@ -437,7 +428,7 @@ static void fill_ttyclock_time(int *digits, unsigned int *time) {
     }
 }
 
-static void parse_time_arg(const char *time) {
+static void parse_time_arg(const char *time, int timer_id) {
     int digits[N_TIME_DIGITS];
     for (int i = 0; i < N_TIME_DIGITS; ++i) digits[i] = -1;
     
@@ -463,28 +454,23 @@ static void parse_time_arg(const char *time) {
         
         ++time;
     }
-    for (auto const& val : timers_map) {
-        
-        bool status = timers_execution_vector[val.first];
-        date *cur_date = dates_of_timers[val.first];
-        
-        if (status) {
-            fill_ttyclock_time(digits, cur_date->hour);
-            fill_ttyclock_time(digits + 2, cur_date->minute);
-            fill_ttyclock_time(digits + 4, cur_date->second);
-            memcpy(ttyclock->initial_digits, digits, N_TIME_DIGITS * sizeof(int));
-            
-            cur_date->timestr[0] = cur_date->hour[0] + '0';
-            cur_date->timestr[1] = cur_date->hour[1] + '0';
-            cur_date->timestr[2] = ':';
-            cur_date->timestr[3] = cur_date->minute[0] + '0';
-            cur_date->timestr[4] = cur_date->minute[1] + '0';
-            cur_date->timestr[5] = ':';
-            cur_date->timestr[6] = cur_date->second[0] + '0';
-            cur_date->timestr[7] = cur_date->second[1] + '0';
-            cur_date->timestr[8] = '\0';
-        }
-    }
+    
+    date *cur_date = dates_of_timers[timer_id];
+    
+    fill_ttyclock_time(digits, cur_date->hour);
+    fill_ttyclock_time(digits + 2, cur_date->minute);
+    fill_ttyclock_time(digits + 4, cur_date->second);
+    memcpy(ttyclock->initial_digits, digits, N_TIME_DIGITS * sizeof(int));
+    
+    cur_date->timestr[0] = cur_date->hour[0] + '0';
+    cur_date->timestr[1] = cur_date->hour[1] + '0';
+    cur_date->timestr[2] = ':';
+    cur_date->timestr[3] = cur_date->minute[0] + '0';
+    cur_date->timestr[4] = cur_date->minute[1] + '0';
+    cur_date->timestr[5] = ':';
+    cur_date->timestr[6] = cur_date->second[0] + '0';
+    cur_date->timestr[7] = cur_date->second[1] + '0';
+    cur_date->timestr[8] = '\0';
 }
 
 //void key_event(void) {

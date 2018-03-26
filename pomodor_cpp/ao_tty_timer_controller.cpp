@@ -29,9 +29,9 @@ int main(int argc, const char * argv[]) {
     auto cmdl = argh::parser(argc, argv, argh::parser::PREFER_PARAM_FOR_UNREG_OPTION);
     
     // Reading parameters and parsing arguments (with default values)
-    cmdl("-short", 5) >> sh;
-    cmdl("-long", 30) >> lo;
-    cmdl("-time", 25) >> ti;
+    cmdl("-short", 1) >> sh;
+    cmdl("-long", 1) >> lo;
+    cmdl("-time", 5) >> ti;
     
     for (int argi = 1; argi < argc; argi++)
     {
